@@ -15,6 +15,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
   });
+  
   const token = createToken(user._id);
   res.status(201).json({ data: user, token });
 });
