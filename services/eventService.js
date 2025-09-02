@@ -172,9 +172,7 @@ exports.getEvent = asyncHandler(async (req, res, next) => {
 // POST /api/v1/events
 // Private/Admin-Manager
 exports.createEvent = asyncHandler(async (req, res, next) => {
-  // Add organizer from token
   req.body.organizer = req.user._id;
-  
   const event = await Event.create(req.body);
   res.status(201).json({ data: event });
 });
