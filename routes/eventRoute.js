@@ -31,15 +31,15 @@ router.use('/:eventId/tickets', ticketRoute);
 router.use('/:eventId/reviews', reviewRoute);
 
 // Public routes
-router.get('/', getEvents);
+router.get('/', authService.protect, getEvents);
 router.get('/popular', getPopularEvents);
 
 router.use(authService.protect);
 router.get('/organizer/my-events', authService.allowedTo('admin', 'manager'), getMyEvents);
 router.get('/:id', getEventValidator, getEvent);
 router.use(authService.allowedTo('admin', 'manager'));
-router.post('/', uploadEventImages, resizeEventImages, createEventValidator, createEvent);
-router.put('/:id', uploadEventImages, resizeEventImages, updateEventValidator, updateEvent);
+router.post('/', createEventValidator, createEvent);
+router.put('/:id', updateEventValidator, updateEvent);
 router.delete('/:id', deleteEventValidator, deleteEvent);
 
 module.exports = router;

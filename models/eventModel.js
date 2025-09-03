@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 const eventSchema = new mongoose.Schema(
   {
@@ -33,9 +34,6 @@ const eventSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Event organizer is required']
     },
-    images: [{
-      type: String
-    }],
     coverImage: {
       type: String,
       required: [true, 'Cover image is required']
@@ -107,14 +105,14 @@ const eventSchema = new mongoose.Schema(
       enum: ['draft', 'published', 'cancelled', 'completed'],
       default: 'draft'
     },
-    tags: [{
+    tags: {
       type: String,
       trim: true
-    }],
-    features: [{
+    },
+    features: {
       type: String,
       trim: true
-    }],
+    },
     ageRestriction: {
       minAge: {
         type: Number,

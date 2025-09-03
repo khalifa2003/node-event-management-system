@@ -50,25 +50,17 @@ exports.resizeEventImages = asyncHandler(async (req, res, next) => {
 // Public
 exports.getEvents = asyncHandler(async (req, res, next) => {
   let filter = {};
-  
-  // Filter by category
   if (req.query.category) {
     filter.category = req.query.category;
   }
-  
-  // Filter by city
   if (req.query.city) {
     filter['venue.city'] = new RegExp(req.query.city, 'i');
   }
-  
-  // Filter by date range
   if (req.query.startDate || req.query.endDate) {
     filter['dateTime.start'] = {};
     if (req.query.startDate) filter['dateTime.start'].$gte = new Date(req.query.startDate);
     if (req.query.endDate) filter['dateTime.start'].$lte = new Date(req.query.endDate);
   }
-
-  // Filter by price range
   if (req.query.minPrice || req.query.maxPrice) {
     filter['pricing.ticketPrice'] = {};
     if (req.query.minPrice) {
@@ -78,8 +70,6 @@ exports.getEvents = asyncHandler(async (req, res, next) => {
       filter['pricing.ticketPrice']['$lte'] = parseInt(req.query.maxPrice);
     }
   }
-  
-  // Filter by status (default published for public)
   if (req.user && (req.user.role === 'admin' || req.user.role === 'manager')) {
     if (req.query.status) {
       filter.status = req.query.status;
@@ -87,21 +77,12 @@ exports.getEvents = asyncHandler(async (req, res, next) => {
   } else {
     filter.status = 'published';
   }
-  
-  // Search in title and description
   if (req.query.search) {
     filter.$text = { $search: req.query.search };
   }
-  
-  // Build query
   let query = Event.find(filter)
     .populate('category', 'name slug color')
     .populate('organizer', 'name email profileImg')
-    .populate({
-      path: 'reviews',
-      select: 'rating user createdAt',
-      populate: { path: 'user', select: 'name profileImg' }
-    });
   
   // Sorting
   if (req.query.sort) {
@@ -139,7 +120,6 @@ exports.getEvent = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   let query;
   
-  // Check if id is ObjectId or slug
   if (id.match(/^[0-9a-fA-F]{24}$/)) {
     query = Event.findById(id);
   } else {
