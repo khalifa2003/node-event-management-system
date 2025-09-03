@@ -12,9 +12,7 @@ const sendEmail = async (options) => {
       },
     });
 
-    // اختبر الاتصال قبل الإرسال
     await transporter.verify();
-    console.log("✅ Server is ready to take messages");
 
     const mailOpts = {
       from: `"App" <${process.env.EMAIL_USERNAME}>`,
@@ -24,8 +22,6 @@ const sendEmail = async (options) => {
     };
 
     const info = await transporter.sendMail(mailOpts);
-    console.log("📧 Email sent: ", info.messageId);
-
   } catch (error) {
     console.error("❌ Error sending email:", error);
   }

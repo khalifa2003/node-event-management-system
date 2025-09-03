@@ -17,11 +17,18 @@ exports.updateOne = (Model) =>
     res.status(200).json({ data: document });
   });
 
-exports.createOne = (Model) =>
-  asyncHandler(async (req, res) => {
-    const newDoc = await Model.create(req.body);
-    res.status(201).json({ data: newDoc });
-  });
+exports.createOne = Model => asyncHandler(async (req, res, next) => {
+  try {
+    const document = await Model.create(req.body);
+    if (!document) {
+      return next(new ApiError('Failed to create document', 400));
+    }
+    res.status(201).json({ data: document });
+  } catch (err) {
+    return next(new ApiError(`Error creating document: ${err.message}`, 400));
+  }
+});
+
 
 exports.getOne = (Model, populationOpt) =>
   asyncHandler(async (req, res, next) => {
