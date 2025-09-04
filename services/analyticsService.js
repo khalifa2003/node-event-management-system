@@ -338,6 +338,7 @@ exports.getAudienceDemographics = asyncHandler(async (req, res, next) => {
 // GET /api/v1/analytics/events/performance
 // Private/Admin
 exports.getEventPerformance = asyncHandler(async (req, res, next) => {
+  
   const { eventId, organizerId } = req.query;
   let matchStage = {};
   
@@ -347,7 +348,8 @@ exports.getEventPerformance = asyncHandler(async (req, res, next) => {
   if (organizerId) {
     matchStage.organizer = mongoose.Types.ObjectId(organizerId);
   }
-
+  
+  console.log('--------------------------');
   const eventPerformance = await Event.aggregate([
     { $match: matchStage },
     {
@@ -391,24 +393,24 @@ exports.getEventPerformance = asyncHandler(async (req, res, next) => {
         checkedInCount: { $arrayElemAt: ['$ticketStats.checkedIn.count', 0] },
         averageRating: { $avg: '$reviews.rating' },
         reviewsCount: { $size: '$reviews' },
-        occupancyRate: {
-          $multiply: [
-            { $divide: [{ $arrayElemAt: ['$ticketStats.sold.count', 0] }, '$capacity.totalSeats'] },
-            100
-          ]
-        },
-        attendanceRate: {
-          $cond: {
-            if: { $gt: [{ $arrayElemAt: ['$ticketStats.sold.count', 0] }, 0] },
-            then: {
-              $multiply: [
-                { $divide: [{ $arrayElemAt: ['$ticketStats.checkedIn.count', 0] }, { $arrayElemAt: ['$ticketStats.sold.count', 0] }] },
-                100
-              ]
-            },
-            else: 0
-          }
-        }
+        // occupancyRate: {
+        //   $multiply: [
+        //     { $divide: [{ $arrayElemAt: ['$ticketStats.sold.count', 0] }, '$capacity.totalSeats'] },
+        //     100
+        //   ]
+        // },
+        // attendanceRate: {
+        //   $cond: {
+        //     if: { $gt: [{ $arrayElemAt: ['$ticketStats.sold.count', 0] }, 0] },
+        //     then: {
+        //       $multiply: [
+        //         { $divide: [{ $arrayElemAt: ['$ticketStats.checkedIn.count', 0] }, { $arrayElemAt: ['$ticketStats.sold.count', 0] }] },
+        //         100
+        //       ]
+        //     },
+        //     else: 0
+        //   }
+        // }
       }
     },
     {
