@@ -1,8 +1,5 @@
-// services/ticketService.js
+const { Types } = require('mongoose');
 const asyncHandler = require('express-async-handler');
-const QRCode = require('qrcode');
-
-const factory = require('./handlersFactory');
 const ApiError = require('../utils/apiError');
 const Event = require('../models/eventModel');
 const Ticket = require('../models/ticketModel');
@@ -102,7 +99,6 @@ exports.bookTicket = asyncHandler(async (req, res, next) => {
   if (event.status !== 'published') {
     return next(new ApiError('Event is not available for booking', 400));
   }
-  console.log(event.capacity);
   
   if (event.capacity.availableSeats <= 0) {
     return next(new ApiError('No seats available', 400));
@@ -310,17 +306,11 @@ exports.checkInTicket = asyncHandler(async (req, res, next) => {
 // Private/Admin-Manager
 exports.getEventTickets = asyncHandler(async (req, res, next) => {
   const { eventId } = req.params;
-  
-  // Verify event ownership for non-admin users
-  if (req.user.role !== 'admin') {
-    const event = await Event.findById(eventId);
-    if (!event || event.organizer.toString() !== req.user._id.toString()) {
-      return next(new ApiError('You can only view tickets for your own events', 403));
-    }
+  const event = await Event.findById(eventId);
+  if (!event || event.organizer.toString() !== req.user._id.toString()) {
+    return next(new ApiError('You can only view tickets for your own events', 403));
   }
-  
   let filter = { event: eventId };
-  
   if (req.query.status) {
     filter.status = req.query.status;
   }
@@ -328,13 +318,12 @@ exports.getEventTickets = asyncHandler(async (req, res, next) => {
   if (req.query.checkedIn) {
     filter['checkIn.isCheckedIn'] = req.query.checkedIn === 'true';
   }
-  
   const tickets = await Ticket.find(filter)
-    .populate('user', 'name email phone')
-    .sort('-createdAt');
-    
+  .populate('user', 'name email phone')
+  .sort('-createdAt');
+  
   const stats = await Ticket.aggregate([
-    { $match: { event: mongoose.Types.ObjectId(eventId) } },
+    { $match: { event: new Types.ObjectId(eventId) } },
     {
       $group: {
         _id: null,
@@ -347,7 +336,7 @@ exports.getEventTickets = asyncHandler(async (req, res, next) => {
       }
     }
   ]);
-    
+  
   res.status(200).json({
     status: 'success',
     results: tickets.length,
