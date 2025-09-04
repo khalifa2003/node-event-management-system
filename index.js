@@ -14,7 +14,7 @@ const ApiError = require('./utils/apiError');
 const globalError = require('./middlewares/errorMiddleware');
 const dbConnection = require('./config/database');
 // Routes
-const mountRoutes = require('./routes');
+const mountRoutes = require('./routes/index');
 const PORT = process.env.PORT || 8000;
 
 // Connect with db
