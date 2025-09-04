@@ -348,8 +348,6 @@ exports.getEventPerformance = asyncHandler(async (req, res, next) => {
   if (organizerId) {
     matchStage.organizer = mongoose.Types.ObjectId(organizerId);
   }
-  
-  console.log('--------------------------');
   const eventPerformance = await Event.aggregate([
     { $match: matchStage },
     {
