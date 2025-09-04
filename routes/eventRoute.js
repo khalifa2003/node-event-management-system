@@ -18,17 +18,14 @@ const {
 
 const authService = require('../services/authService');
 
-// Import nested routes
 const ticketRoute = require('./ticketRoute');
 const reviewRoute = require('./reviewRoute');
 
 const router = express.Router();
 
-// Nested routes
 router.use('/:eventId/tickets', ticketRoute);
 router.use('/:eventId/reviews', reviewRoute);
 
-// Public routes
 router.get('/', authService.protect, getEvents);
 router.get('/popular', getPopularEvents);
 
