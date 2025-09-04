@@ -12,8 +12,6 @@ const {
   createEvent,
   updateEvent,
   deleteEvent,
-  uploadEventImages,
-  resizeEventImages,
   getMyEvents,
   getPopularEvents
 } = require('../services/eventService');
