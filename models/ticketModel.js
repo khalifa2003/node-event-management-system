@@ -4,8 +4,7 @@ const ticketSchema = new mongoose.Schema(
   {
     ticketNumber: {
       type: String,
-      unique: true,
-      required: true
+      unique: true
     },
     event: {
       type: mongoose.Schema.Types.ObjectId,
@@ -43,10 +42,7 @@ const ticketSchema = new mongoose.Schema(
       }
     },
     seatInfo: {
-      seatNumber: {
-        type: String,
-        required: [true, 'Seat number is required']
-      },
+      seatNumber: String,
       section: String,
       row: String
     },
@@ -88,7 +84,7 @@ const ticketSchema = new mongoose.Schema(
     },
     qrCode: {
       data: String,
-      image: String // Base64 or file path
+      image: String 
     },
     status: {
       type: String,
@@ -156,10 +152,8 @@ ticketSchema.pre('save', async function(next) {
   next();
 });
 
-// Set valid until date if not provided
 ticketSchema.pre('save', function(next) {
   if (this.isNew && !this.validUntil && this.event) {
-    // Valid until 24 hours after event end time
     this.validUntil = new Date(Date.now() + 24 * 60 * 60 * 1000);
   }
   next();

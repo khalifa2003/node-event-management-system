@@ -102,6 +102,7 @@ exports.bookTicket = asyncHandler(async (req, res, next) => {
   if (event.status !== 'published') {
     return next(new ApiError('Event is not available for booking', 400));
   }
+  console.log(event.capacity);
   
   if (event.capacity.availableSeats <= 0) {
     return next(new ApiError('No seats available', 400));
